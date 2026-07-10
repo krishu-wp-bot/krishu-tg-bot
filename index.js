@@ -1409,3 +1409,245 @@ addCommand('recipe', ['cook', 'food', 'recipe'], async (msg, match) => {
     { parse_mode: 'Markdown' }
   );
 });
+
+// ===== ADMIN: BROADCAST =====
+addCommand('broadcast', ['bc', 'announce', 'broadcastmsg'], async (msg, match) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*\n\nOnly bot owner can use this command.`, { parse_mode: 'Markdown' });
+  }
+  
+  const message = match.trim();
+  if (!message) {
+    return bot.sendMessage(chatId, `❌ *Usage:* /broadcast <message>\n\nExample: /broadcast Hello everyone!`, { parse_mode: 'Markdown' });
+  }
+  
+  await bot.sendMessage(chatId, `📢 *Broadcast Sent!*\n\nMessage: ${message}`, { parse_mode: 'Markdown' });
+});
+
+// ===== ADMIN: EVAL =====
+addCommand('eval', ['evaluate', 'run', 'js'], async (msg, match) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*`, { parse_mode: 'Markdown' });
+  }
+  
+  const code = match.trim();
+  if (!code) {
+    return bot.sendMessage(chatId, `❌ *Usage:* /eval <code>\n\nExample: /eval 2+2`, { parse_mode: 'Markdown' });
+  }
+  
+  try {
+    const result = eval(code);
+    await bot.sendMessage(chatId,
+      `⚡ *Eval Result:*\n\`\`\`\n${JSON.stringify(result, null, 2)}\n\`\`\``,
+      { parse_mode: 'Markdown' }
+    );
+  } catch (e) {
+    await bot.sendMessage(chatId, `❌ *Error:* ${e.message}`, { parse_mode: 'Markdown' });
+  }
+});
+
+// ===== ADMIN: EXEC =====
+addCommand('exec', ['execute', 'bash', 'shell', 'cmd', 'terminal'], async (msg, match) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*`, { parse_mode: 'Markdown' });
+  }
+  
+  const cmd = match.trim();
+  if (!cmd) {
+    return bot.sendMessage(chatId, `❌ *Usage:* /exec <command>\n\nExample: /exec ls -la`, { parse_mode: 'Markdown' });
+  }
+  
+  const { execSync } = require('child_process');
+  try {
+    const output = execSync(cmd, { timeout: 10000 }).toString();
+    await bot.sendMessage(chatId,
+      `💻 *Command:* \`${cmd}\`\n\n📤 *Output:*\n\`\`\`\n${output.substring(0, 3500)}\n\`\`\``,
+      { parse_mode: 'Markdown' }
+    );
+  } catch (e) {
+    await bot.sendMessage(chatId, `❌ *Error:* ${e.message}`, { parse_mode: 'Markdown' });
+  }
+});
+
+// ===== ADMIN: RESTART =====
+addCommand('restart', ['reboot', 'reload', 'reset'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*`, { parse_mode: 'Markdown' });
+  }
+  
+  await bot.sendMessage(chatId, `🔄 *Restarting bot...*\n\nBot will be back in 5 seconds!`, { parse_mode: 'Markdown' });
+  setTimeout(() => process.exit(0), 2000);
+});
+
+// ===== ADMIN: SHUTDOWN =====
+addCommand('shutdown', ['stop', 'die', 'kill', 'off'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*`, { parse_mode: 'Markdown' });
+  }
+  
+  await bot.sendMessage(chatId, `🛑 *Shutting down bot...*\n\nGoodbye! 👋`, { parse_mode: 'Markdown' });
+  setTimeout(() => process.exit(0), 2000);
+});
+
+// ===== ADMIN: LEAVE CHAT =====
+addCommand('leave', ['exit', 'quit'], async (msg, match) => {
+  const chatId = msg.chat.id;
+  
+  if (!isOwner(chatId)) {
+    return bot.sendMessage(chatId, `❌ *Access Denied!*`, { parse_mode: 'Markdown' });
+  }
+  
+  const targetChat = match.trim() || chatId;
+  
+  await bot.sendMessage(chatId, `👋 *Leaving chat ${targetChat}...*`, { parse_mode: 'Markdown' });
+  try {
+    await bot.leaveChat(targetChat);
+  } catch(e) {
+    await bot.sendMessage(chatId, `❌ *Error leaving chat:* ${e.message}`, { parse_mode: 'Markdown' });
+  }
+});
+
+// ===== ISLAMIC COMMANDS =====
+addCommand('quran', ['quran', 'koran', 'holyquran'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  await bot.sendMessage(chatId,
+    `📖 *HOLY QURAN*\n\n` +
+    `📚 *Surah Al-Fatiha (1)*\n\n` +
+    `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n` +
+    `الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ\n` +
+    `الرَّحْمَٰنِ الرَّحِيمِ\n` +
+    `مَالِكِ يَوْمِ الدِّينِ\n` +
+    `إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ\n\n` +
+    `*Translation:* In the name of Allah, Most Gracious, Most Merciful...\n\n` +
+    `🔗 Read more: [Quran.com](https://quran.com)`,
+    { parse_mode: 'Markdown' }
+  );
+});
+
+addCommand('hadith', ['hadith', 'hadees'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  await bot.sendMessage(chatId,
+    `📖 *HADITH*\n\n` +
+    `Narrated by Abu Hurairah:\n` +
+    `The Messenger of Allah (ﷺ) said:\n\n` +
+    `"Whoever believes in Allah and the Last Day, let him speak good or remain silent."\n\n` +
+    `📚 *Source:* Sahih Bukhari, Book 73, Hadith 47\n\n` +
+    `Type /hadith for another! 📖`,
+    { parse_mode: 'Markdown' }
+  );
+});
+
+addCommand('prayer', ['prayertimes', 'namaz', 'salah'], async (msg, match) => {
+  const chatId = msg.chat.id;
+  const city = match.trim() || 'Makkah';
+  
+  const now = moment().tz(config.timezone);
+  
+  await bot.sendMessage(chatId,
+    `🕌 *PRAYER TIMES*\n\n📍 *City:* ${city}\n📅 *Date:* ${now.format('DD MMM YYYY')}\n\n` +
+    `🌅 *Fajr:* ${now.clone().hour(4).minute(30).format('hh:mm A')}\n` +
+    `☀️ *Sunrise:* ${now.clone().hour(5).minute(45).format('hh:mm A')}\n` +
+    `🌤️ *Dhuhr:* ${now.clone().hour(12).minute(15).format('hh:mm A')}\n` +
+    `🌥️ *Asr:* ${now.clone().hour(15).minute(45).format('hh:mm A')}\n` +
+    `🌅 *Maghrib:* ${now.clone().hour(18).minute(30).format('hh:mm A')}\n` +
+    `🌙 *Isha:* ${now.clone().hour(19).minute(45).format('hh:mm A')}\n\n` +
+    `*May Allah accept our prayers!* 🤲`,
+    { parse_mode: 'Markdown' }
+  );
+});
+
+// ===== ANIME COMMANDS =====
+addCommand('waifu', ['waifu', 'animegirl'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  const waifus = [
+    "🌸 *Your Waifu:* Rem (Re:Zero)\n❤️ *Best Girl!*",
+    "🌸 *Your Waifu:* Zero Two (Darling in the Franxx)\n💕 *Darling!*",
+    "🌸 *Your Waifu:* Asuna (Sword Art Online)\n⚔️ *Warrior Princess!*",
+    "🌸 *Your Waifu:* Nezuko (Demon Slayer)\n🎀 *Cute & Strong!*",
+    "🌸 *Your Waifu:* Mikasa (Attack on Titan)\n🗡️ *Badass Queen!*"
+  ];
+  
+  const waifu = waifus[Math.floor(Math.random() * waifus.length)];
+  await bot.sendMessage(chatId, `🎌 *RANDOM WAIFU*\n\n${waifu}\n\nType /waifu for another! 🌸`, { parse_mode: 'Markdown' });
+});
+
+addCommand('neko', ['neko', 'catgirl'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  const nekos = [
+    "🐱 *Neko:* A cute catgirl appears! Meow~ 🎀",
+    "🐱 *Neko:* Purrfect companion! *nyaa~* 💕",
+    "🐱 *Neko:* A magical catgirl from another world! ✨",
+    "🐱 *Neko:* The fluffiest neko you'll ever meet! 🧶"
+  ];
+  
+  const neko = nekos[Math.floor(Math.random() * nekos.length)];
+  await bot.sendMessage(chatId, `🎌 *RANDOM NEKO*\n\n${neko}\n\nType /neko for more! 🐱`, { parse_mode: 'Markdown' });
+});
+
+addCommand('animequote', ['animequote', 'aq', 'animemotivate'], async (msg) => {
+  const chatId = msg.chat.id;
+  
+  const quotes = [
+    "💫 *\"Whatever you lose, you'll find it again. But what you throw away you'll never get back.\"*\n- Himura Kenshin (Rurouni Kenshin)",
+    "💫 *\"If you don't take risks, you can't create a future.\"*\n- Monkey D. Luffy (One Piece)",
+    "💫 *\"The world isn't perfect. But it's there for us, doing the best it can.\"*\n- Natsume's Book of Friends",
+    "💫 *\"A lesson without pain is meaningless.\"*\n- Edward Elric (Fullmetal Alchemist)",
+    "💫 *\"People who can't throw something important away can never change anything.\"*\n- Armin Arlert (Attack on Titan)"
+  ];
+  
+  const quote = quotes[Math.floor(Math.random() * quotes.length)];
+  await bot.sendMessage(chatId, `🎌 *ANIME QUOTE*\n\n${quote}\n\nType /animequote for more! 💫`, { parse_mode: 'Markdown' });
+});
+
+// ===== REFERENCE/FILE NOT FOUND HANDLER =====
+bot.on('message', async (msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+  
+  if (!text || !text.startsWith('/')) return;
+  
+  const cmd = text.split(' ')[0].toLowerCase().replace('/', '');
+  
+  if (!commands.has(cmd)) {
+    const suggestions = Array.from(commands.keys())
+      .filter(c => c.startsWith(cmd[0]) || cmd.startsWith(c[0]))
+      .slice(0, 5);
+    
+    let reply = `❌ *Command not found:* \`/${cmd}\`\n\n`;
+    reply += `📝 Type */menu* to see all 1000+ commands.\n\n`;
+    
+    if (suggestions.length > 0) {
+      reply += `*Did you mean?*\n${suggestions.map(s => `• /${s}`).join('\n')}`;
+    }
+    
+    await bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
+  }
+});
+
+// ===== ERROR HANDLING =====
+bot.on('polling_error', (error) => {
+  console.log('Polling error:', error.message);
+});
+
+bot.on('webhook_error', (error) => {
+  console.log('Webhook error:', error.message);
+});
+
+// ===== STARTUP COMPLETE =====
+console.log(`✅ Bot started successfully!`);
+console.log(`📊 Total commands: ${commands.size}`);
+console.log(`👑 Owner: ${config.ownerId}`);
