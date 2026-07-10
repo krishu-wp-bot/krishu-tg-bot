@@ -1,0 +1,17 @@
+{
+  "name": "krishu-tg-bot",
+  "version": "6.0.0",
+  "description": "KRISHU TELEGRAM BOT - 1000+ Commands Real Working",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "axios": "^1.7.2",
+    "fs-extra": "^11.2.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45"
+  }
+}
